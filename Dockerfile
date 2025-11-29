@@ -3,7 +3,7 @@ FROM node:18-alpine AS base
 
 # 2. Install dependencies only when needed
 FROM base AS deps
-# FIX: Install libraries required by Next.js (libc6-compat) and Prisma (openssl)
+# Install system libraries required by Next.js and Prisma
 RUN apk add --no-cache libc6-compat openssl
 
 WORKDIR /app
@@ -11,8 +11,10 @@ WORKDIR /app
 # Copy package.json (and lock file if it exists)
 COPY package.json package-lock.json* ./
 
-# FIX: Use 'npm install' instead of 'ci' to generate lockfile automatically
-RUN npm install
+# --- FIX IS HERE ---
+# Added '--ignore-scripts' to prevent "prisma generate" from running 
+# before the schema file is copied.
+RUN npm install --ignore-scripts
 
 # 3. Rebuild the source code
 FROM base AS builder
@@ -20,23 +22,22 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma Client (requires openssl from base/deps if needed, but usually self-contained)
+# Now that we have copied all files (including prisma/schema.prisma), 
+# we can generate the client safely.
 RUN npx prisma generate
 
 # Build Next.js
 RUN npm run build
 
-# 4. Production image, copy all the files and run next
+# 4. Production image
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
 
-# Create a non-root user for security
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy necessary files
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
