@@ -1,35 +1,31 @@
 # 1. Base image
 FROM node:18-alpine AS base
 
-# 2. Install dependencies only when needed
+# 2. Install dependencies
 FROM base AS deps
-# Install system libraries required by Next.js and Prisma
 RUN apk add --no-cache libc6-compat openssl
 
 WORKDIR /app
 
-# Copy package.json (and lock file if it exists)
+# Copy package files
 COPY package.json package-lock.json* ./
 
-# --- FIX IS HERE ---
-# Added '--ignore-scripts' to prevent "prisma generate" from running 
-# before the schema file is copied.
+# Install packages but SKIP scripts (prevents "prisma generate" failing before schema exists)
 RUN npm install --ignore-scripts
 
-# 3. Rebuild the source code
+# 3. Builder Stage
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Now that we have copied all files (including prisma/schema.prisma), 
-# we can generate the client safely.
+# CRITICAL STEP: Explicitly generate the client here with the schema present
 RUN npx prisma generate
 
-# Build Next.js
+# Now run the build
 RUN npm run build
 
-# 4. Production image
+# 4. Runner Stage (Production)
 FROM base AS runner
 WORKDIR /app
 
@@ -38,9 +34,19 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Copy the PUBLIC folder
 COPY --from=builder /app/public ./public
+
+# Copy the STANDALONE build
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# --- CLAUDE'S FIX (Essential for DB) ---
+# Copy the generated Prisma client binaries to the runner
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+# Copy the schema just in case we need it for migrations later
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
 
