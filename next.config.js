@@ -1,15 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  
-  // Dangerously allow production builds to successfully complete even if
-  // your project has type errors.
+  // Ignore TypeScript errors during build (essential for fast home-lab deployment)
   typescript: {
     ignoreBuildErrors: true,
   },
-  
-  // Dangerously allow production builds to successfully complete even if
-  // your project has ESLint errors.
+  // Ignore Linting errors during build
   eslint: {
     ignoreDuringBuilds: true,
   },
