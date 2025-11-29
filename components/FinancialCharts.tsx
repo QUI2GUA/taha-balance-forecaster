@@ -2,10 +2,10 @@
 'use client'
 
 import * as React from "react"
-import { format, startOfWeek, endOfWeek, isSameWeek } from "date-fns"
+import { format, startOfWeek } from "date-fns"
 import { 
-  Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis, 
-  Line, LineChart, Pie, PieChart, Cell, StackedBarChart 
+  Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, 
+  Pie, PieChart, Cell, Legend
 } from "recharts"
 import {
   Card,
@@ -23,7 +23,7 @@ import {
   ChartLegendContent
 } from "@/components/ui/chart"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { generateForecast, ForecastItem } from "@/lib/forecast"
+import { generateForecast } from "@/lib/forecast"
 import { Transaction } from "@prisma/client"
 
 interface FinancialChartsProps {
@@ -32,9 +32,9 @@ interface FinancialChartsProps {
 }
 
 export function FinancialCharts({ startingBalance, transactions }: FinancialChartsProps) {
-  // 1. Generate Raw Data
+  // 1. Generate Raw Data (90 days)
   const forecast = React.useMemo(() => 
-    generateForecast(startingBalance, transactions, 90), // Limit to 90 days for charts to keep them readable
+    generateForecast(startingBalance, transactions, 90), 
   [startingBalance, transactions]);
 
   // 2. Data Prep: Stacked Weekly Data
@@ -63,7 +63,7 @@ export function FinancialCharts({ startingBalance, transactions }: FinancialChar
     return Object.keys(counts).map(key => ({ name: key, value: counts[key] }));
   }, [transactions]);
 
-  // Chart Configuration (Colors & Labels)
+  // Chart Configuration
   const chartConfig = {
     balance: {
       label: "Balance",
@@ -71,7 +71,7 @@ export function FinancialCharts({ startingBalance, transactions }: FinancialChar
     },
     income: {
       label: "Income",
-      color: "hsl(var(--emerald-500))", // You might need to add this color variable or use a hex
+      color: "hsl(var(--emerald-500))",
     },
     expense: {
       label: "Expense",
@@ -157,6 +157,36 @@ export function FinancialCharts({ startingBalance, transactions }: FinancialChar
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <ChartLegend content={<ChartLegendContent />} />
                 {/* Income Bar */}
-                <Bar dataKey="income" stackId="a" fill="#10b981" radius={[0, 0, 4, 4]} />
+                <Bar dataKey="income" stackId="a" fill="var(--emerald-500)" radius={[0, 0, 4, 4]} />
                 {/* Expense Bar */}
-                <Bar dataKey="expense" stackId="a" fill="#ef4444" radius={[4, 4
+                <Bar dataKey="expense" stackId="a" fill="var(--red-500)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          </TabsContent>
+
+           {/* 4. PIE CHART (Recurrence Types) */}
+           <TabsContent value="distribution" className="h-[300px] w-full">
+            <ChartContainer config={chartConfig} className="h-full w-full mx-auto aspect-square max-h-[300px]">
+              <PieChart>
+                <Pie 
+                    data={recurrenceData} 
+                    dataKey="value" 
+                    nameKey="name" 
+                    innerRadius={60} 
+                    strokeWidth={5}
+                >
+                    {recurrenceData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={`hsl(var(--chart-${(index % 5) + 1}))`} />
+                    ))}
+                </Pie>
+                <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                <ChartLegend content={<ChartLegendContent />} className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center" />
+              </PieChart>
+            </ChartContainer>
+          </TabsContent>
+
+        </Tabs>
+      </CardContent>
+    </Card>
+  )
+}
