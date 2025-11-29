@@ -1,5 +1,6 @@
 // lib/forecast.ts
 
+import { format } from 'date-fns';
 import { Transaction, RecurrenceType } from '@prisma/client';
 import { addDays, addWeeks, addMonths, addYears, isSameDay, isAfter, isBefore } from 'date-fns';
 
@@ -15,16 +16,18 @@ export interface ForecastItem {
 // Helper to check if a date matches a recurrence rule
 const isOccurrence = (date: Date, txn: Transaction): boolean => {
   const start = new Date(txn.startDate);
-  
   // If the date is before the start date, ignore
   if (isBefore(date, start)) return false;
-  
   // If the transaction has an end date and we are past it, ignore
   if (txn.endDate && isAfter(date, new Date(txn.endDate))) return false;
 
   // Check if this specific date was skipped by the user
+  // 1. Normalize the current loop date to "YYYY-MM-DD"
+  const currentDateString = format(date, 'yyyy-MM-dd');
+  // 2. Access the skipped dates array
   const skipped = (txn.skippedDates as string[]) || [];
-  if (skipped.some(skipDate => isSameDay(new Date(skipDate), date))) return false;
+  // 3. Strict string comparison
+  if (skipped.includes(currentDateString)) return false;
 
   // Logic for each recurrence type
   const diffTime = date.getTime() - start.getTime();
