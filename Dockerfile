@@ -1,26 +1,32 @@
-# Base image
+# 1. Base image
 FROM node:18-alpine AS base
 
-# Install dependencies only when needed
+# 2. Install dependencies only when needed
 FROM base AS deps
+# FIX: Install libraries required by Next.js (libc6-compat) and Prisma (openssl)
+RUN apk add --no-cache libc6-compat openssl
+
 WORKDIR /app
-COPY package.json ./
-# Install dependencies
+
+# Copy package.json (and lock file if it exists)
+COPY package.json package-lock.json* ./
+
+# FIX: Use 'npm install' instead of 'ci' to generate lockfile automatically
 RUN npm install
 
-# Rebuild the source code only when needed
+# 3. Rebuild the source code
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma Client
+# Generate Prisma Client (requires openssl from base/deps if needed, but usually self-contained)
 RUN npx prisma generate
 
 # Build Next.js
 RUN npm run build
 
-# Production image, copy all the files and run next
+# 4. Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
