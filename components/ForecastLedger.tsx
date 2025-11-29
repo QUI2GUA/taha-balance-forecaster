@@ -1,20 +1,21 @@
-// components/ForecastLedger.tsx
+'use client'
 
-import React from 'react';
+import React, { useTransition } from 'react';
 import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { 
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils"; // Shadcn utility
+import { MoreHorizontal, Ban } from "lucide-react"; // Icons
+import { cn } from "@/lib/utils";
 import { format } from 'date-fns';
-import { generateForecast } from '@/lib/forecast'; // The logic we wrote earlier
+import { generateForecast } from '@/lib/forecast';
 import { Transaction } from '@prisma/client';
+import { skipTransaction } from '@/app/actions'; // Import the action
+import { toast } from "sonner"; // Optional: for toast notifications if you have them
 
 interface ForecastLedgerProps {
   startingBalance: number;
@@ -22,10 +23,27 @@ interface ForecastLedgerProps {
 }
 
 export const ForecastLedger = ({ startingBalance, transactions }: ForecastLedgerProps) => {
-  // Generate the forecast for the next year
+  const [isPending, startTransition] = useTransition();
+
+  // Generate the forecast
   const forecastData = generateForecast(startingBalance, transactions, 365);
 
-  // Currency formatter
+  const handleSkip = (transactionId: string, date: Date) => {
+    // Format strictly to YYYY-MM-DD for the backend
+    const dateString = format(date, 'yyyy-MM-dd');
+    
+    // Use transition for better UX (prevents UI freeze)
+    startTransition(async () => {
+      try {
+        await skipTransaction(transactionId, dateString);
+        // Note: The toast is optional, remove if you haven't installed a toast library
+        console.log("Skipped occurrence on " + dateString);
+      } catch (e) {
+        console.error("Failed to skip", e);
+      }
+    });
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -44,7 +62,14 @@ export const ForecastLedger = ({ startingBalance, transactions }: ForecastLedger
         </div>
       </CardHeader>
       
-      <CardContent className="p-0 flex-1 overflow-auto">
+      <CardContent className="p-0 flex-1 overflow-auto relative">
+        {/* Loading Overlay when revalidating */}
+        {isPending && (
+            <div className="absolute inset-0 bg-background/50 z-50 flex items-center justify-center">
+                <span className="text-sm text-muted-foreground animate-pulse">Updating forecast...</span>
+            </div>
+        )}
+
         <Table>
           <TableHeader className="sticky top-0 bg-background z-10 shadow-sm">
             <TableRow>
@@ -52,11 +77,11 @@ export const ForecastLedger = ({ startingBalance, transactions }: ForecastLedger
               <TableHead className="w-[300px]">Description</TableHead>
               <TableHead className="text-right">Amount</TableHead>
               <TableHead className="text-right">Running Balance</TableHead>
+              <TableHead className="w-[50px]"></TableHead> {/* Actions Column */}
             </TableRow>
           </TableHeader>
           <TableBody>
             {forecastData.map((item, index) => {
-              // Logic to group visually by week or highlight overdrafts
               const isOverdraft = item.runningBalance < 0;
               const isIncome = item.amount > 0;
               
@@ -64,8 +89,7 @@ export const ForecastLedger = ({ startingBalance, transactions }: ForecastLedger
                 <TableRow 
                   key={`${item.transactionId}-${index}`}
                   className={cn(
-                    "transition-colors",
-                    // If balance < 0, highlight the whole row in light red (dark red in dark mode)
+                    "transition-colors group",
                     isOverdraft 
                       ? "bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40" 
                       : "hover:bg-muted/50"
@@ -79,10 +103,7 @@ export const ForecastLedger = ({ startingBalance, transactions }: ForecastLedger
                   </TableCell>
                   
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                        <span>{item.title}</span>
-                        {/* Optional: Add badges for Recurring vs One-time */}
-                    </div>
+                    <span className="font-medium">{item.title}</span>
                   </TableCell>
                   
                   <TableCell className={cn(
@@ -97,6 +118,27 @@ export const ForecastLedger = ({ startingBalance, transactions }: ForecastLedger
                     isOverdraft ? "text-red-600 dark:text-red-400" : "text-foreground"
                   )}>
                     {formatCurrency(item.runningBalance)}
+                  </TableCell>
+
+                  {/* ACTION MENU */}
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem 
+                            className="text-red-600 focus:text-red-600"
+                            onClick={() => handleSkip(item.transactionId, item.date)}
+                        >
+                          <Ban className="mr-2 h-4 w-4" />
+                          Skip this occurrence
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               );
