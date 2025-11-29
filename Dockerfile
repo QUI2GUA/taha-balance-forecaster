@@ -18,6 +18,9 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN ls -la prisma/ || echo "ERROR: prisma directory not found"
+RUN npx prisma generate || echo "ERROR: prisma generate failed"
+RUN npm run build 2>&1 | tee build.log || (cat build.log && exit 1)
 
 # Set a dummy DATABASE_URL for build time
 ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder?schema=public"
