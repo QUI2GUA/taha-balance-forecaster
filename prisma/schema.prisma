@@ -34,7 +34,7 @@ model Transaction {
   account         Account        @relation(fields: [accountId], references: [id])
   
   title           String
-  amount          Decimal        // Positive for Income, Negative for Expense
+  amount          Decimal        // Positive for Income Negative for Expense
   startDate       DateTime
   
   recurrence      RecurrenceType @default(ONE_TIME)
