@@ -2,6 +2,7 @@
 
 import { ForecastLedger } from '@/components/ForecastLedger';
 import { AddTransactionModal } from '@/components/AddTransactionModal';
+import { FinancialCharts } from '@/components/FinancialCharts';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -36,6 +37,12 @@ export default async function DashboardPage() {
           {/* Replaced placeholder button with our new Modal */}
           <AddTransactionModal />
         </div>
+
+        {/* The New Charts Section */}
+        <FinancialCharts 
+            startingBalance={Number(account.currentBalance)} 
+            transactions={transactions} 
+        />
 
         <ForecastLedger 
             startingBalance={Number(account.currentBalance)} 
