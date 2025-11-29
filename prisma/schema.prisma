@@ -1,0 +1,50 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RecurrenceType {
+  ONE_TIME
+  WEEKLY
+  BI_WEEKLY
+  MONTHLY
+  BI_MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+model Account {
+  id              String   @id @default(cuid())
+  name            String
+  currentBalance  Decimal  @default(0.00) // The "Anchor" balance for forecasts
+  updatedAt       DateTime @updatedAt
+  
+  transactions    Transaction[]
+}
+
+model Transaction {
+  id              String         @id @default(cuid())
+  accountId       String
+  account         Account        @relation(fields: [accountId], references: [id])
+  
+  title           String
+  amount          Decimal        // Positive for Income, Negative for Expense
+  startDate       DateTime
+  
+  recurrence      RecurrenceType @default(ONE_TIME)
+  
+  // For recurring items: when does it stop? (Optional)
+  endDate         DateTime?
+
+  // Exception handling: Dates to skip (JSON array of Date strings)
+  skippedDates    Json?          @default("[]") 
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
