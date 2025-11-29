@@ -19,6 +19,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Set a dummy DATABASE_URL for build time
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder?schema=public"
+
 # CRITICAL STEP: Explicitly generate the client here with the schema present
 RUN npx prisma generate
 
