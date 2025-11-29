@@ -59,7 +59,6 @@ export const generateForecast = (
   daysToForecast: number = 365
 ): ForecastItem[] => {
   let currentBalance = startingBalance;
-  const amount = Number(txn.amount); // Ensures Prisma Decimal becomes a JS Number
   const forecast: ForecastItem[] = [];
   const today = new Date();
 
