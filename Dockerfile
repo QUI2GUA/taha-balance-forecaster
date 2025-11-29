@@ -26,7 +26,7 @@ ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholde
 RUN npx prisma generate
 
 # Now run the build
-RUN npm run build
+RUN npm run build -- --debug
 
 # 4. Runner Stage (Production)
 FROM base AS runner
