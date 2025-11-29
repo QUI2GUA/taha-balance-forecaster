@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # The Next.js Application
+  app:
+    container_name: forecast-ledger-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # Connection string for the postgres service defined below
+      - DATABASE_URL=postgresql://user:password@db:5432/forecastdb?schema=public
+    depends_on:
+      - db
+    networks:
+      - forecast-net
+
+  # PostgreSQL Database
+  db:
+    container_name: forecast-ledger-db
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: forecastdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - forecast-net
+
+volumes:
+  db_data:
+
+networks:
+  forecast-net:
