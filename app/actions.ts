@@ -49,3 +49,28 @@ export async function createTransaction(formData: z.infer<typeof transactionSche
   
   return { success: true };
 }
+
+export async function skipTransaction(transactionId: string, dateString: string) {
+  // 1. Find the transaction
+  const transaction = await prisma.transaction.findUnique({
+    where: { id: transactionId }
+  });
+
+  if (!transaction) throw new Error("Transaction not found");
+
+  // 2. Get existing skipped dates safely
+  const existingSkipped = (transaction.skippedDates as string[]) || [];
+
+  // 3. Add new date if not already present
+  if (!existingSkipped.includes(dateString)) {
+    await prisma.transaction.update({
+      where: { id: transactionId },
+      data: {
+        skippedDates: [...existingSkipped, dateString]
+      }
+    });
+  }
+
+  // 4. Update the UI
+  revalidatePath('/');
+}
