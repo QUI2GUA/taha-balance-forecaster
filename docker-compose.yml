@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  # 1. The Frontend/Backend App
   app:
     container_name: forecast-ledger-app
+    # Use "context: ." to build from the current directory (Repository root)
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,16 +11,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # We use the service name 'db' as the host.
-      # 'pguser' and 'pgpassword' must match the db service below.
       - DATABASE_URL=postgresql://pguser:pgpassword@db:5432/forecastdb?schema=public
     depends_on:
       db:
-        condition: service_healthy # Wait for DB to be truly ready, not just started
+        condition: service_healthy
     networks:
       - forecast-net
 
-  # 2. The Database
   db:
     container_name: forecast-ledger-db
     image: postgres:15-alpine
@@ -30,8 +27,6 @@ services:
       POSTGRES_PASSWORD: pgpassword
       POSTGRES_DB: forecastdb
     volumes:
-      # PERSISTENCE CONFIGURATION
-      # Maps the named volume 'postgres_data' to the container's data folder
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pguser -d forecastdb"]
@@ -41,7 +36,6 @@ services:
     networks:
       - forecast-net
 
-# Define the persistent volume
 volumes:
   postgres_data:
     driver: local
