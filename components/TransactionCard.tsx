@@ -15,10 +15,10 @@ import { cn } from '@/lib/utils';
 import { SimpleTransactionOccurrence } from '@/lib/forecast';
 
 interface TransactionCardProps {
-  item: SimpleTransactionOccurrence;
+  transaction: SimpleTransactionOccurrence;
 }
 
-export function TransactionCard({ item }: TransactionCardProps) {
+export function TransactionCard({ transaction: item }: TransactionCardProps) {
   const [isPending, startTransition] = useTransition();
   const isIncome = item.amount > 0;
 
