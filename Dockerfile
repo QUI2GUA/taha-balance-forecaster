@@ -3,7 +3,7 @@ FROM node:18-alpine AS base
 
 # 2. Install dependencies
 FROM base AS deps
-RUN apk add --no-cache libc6-compat openssl1.1-compat
+RUN apk add --no-cache libc6-compat openssl
 
 WORKDIR /app
 
@@ -32,8 +32,8 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
-# Install OpenSSL 1.1 for Prisma Client
-RUN apk add --no-cache openssl1.1-compat
+# Install OpenSSL for Prisma Client
+RUN apk add --no-cache openssl
 
 ENV NODE_ENV production
 
