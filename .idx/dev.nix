@@ -1,7 +1,7 @@
 {pkgs}: {
   channel = "stable-24.05";
   packages = [
-    pkgs.nodejs_20
+    pkgs.nodejs_22
     pkgs.docker
     pkgs.docker-compose
     pkgs.openssl
@@ -9,6 +9,7 @@
   idx.extensions = [
     
   ];
+  services.docker.enable = true;
   idx.previews = {
     previews = {
       web = {

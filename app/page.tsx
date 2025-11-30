@@ -1,4 +1,5 @@
 // app/page.tsx
+export const dynamic = 'force-dynamic'
 
 import { ForecastLedger } from '@/components/ForecastLedger';
 import { AddTransactionModal } from '@/components/AddTransactionModal';
