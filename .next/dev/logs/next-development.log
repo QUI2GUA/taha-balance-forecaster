@@ -55,3 +55,28 @@ Import traces:
     ./app/page.tsx [Server Component]
 
 
+[00:16:53.686] Server  LOG      ✓ Compiled in 29ms
+[00:16:54.396] Server  ERROR   file:///home/user/taha-balance-forecaster/node_modules/@prisma/client/runtime/library.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: TypeError [ERR_INVALID_ARG_TYPE]: The "payload" argument must be of type object. Received null
+[00:16:54.398] Server  ERROR    ⨯ PrismaClientInitializationError: 
+Invalid `{imported module ./lib/db.ts}["default"].account.findFirst()` invocation in
+/home/user/taha-balance-forecaster/.next/dev/server/chunks/ssr/[root-of-the-server]__6b149161._.js:169:152
+
+  166 ;
+  167 async function DashboardPage() {
+  168     // 1. Fetch the main account
+→ 169     const account = await {imported module ./lib/db.ts}["default"].account.findFirst(
+Can't reach database server at `db:5432`
+
+Please make sure your database server is running at `db:5432`.
+[00:16:55.713] Browser ERROR   {"digest":"1627037687","environmentName":"Server","name":"PrismaClientInitializationError"}
+[00:16:55.713] Browser ERROR   uncaughtError: PrismaClientInitializationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].account.findFirst()` invocation in
+/home/user/taha-balance-forecaster/.next/dev/server/chunks/ssr/[root-of-the-server]__6b149161._.js:169:152
+
+  166 ;
+  167 async function DashboardPage() {
+  168     // 1. Fetch the main account
+→ 169     const account = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].account.findFirst(
+Can't reach database server at `db:5432`
+
+Please make sure your database server is running at `db:5432`.

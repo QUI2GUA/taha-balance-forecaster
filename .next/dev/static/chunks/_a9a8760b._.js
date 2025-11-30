@@ -2230,11 +2230,42 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[project]/hooks/use-media-query.ts [app-client] (ecmascript)", ((__turbopack_context__, module, exports) => {
+"[project]/hooks/use-media-query.ts [app-client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
 
-const e = new Error("Could not parse module '[project]/hooks/use-media-query.ts'\n\nExpected 'as', got 's'");
-e.code = 'MODULE_UNPARSABLE';
-throw e;
+// hooks/use-media-query.ts
+__turbopack_context__.s([
+    "useMediaQuery",
+    ()=>useMediaQuery
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var _s = __turbopack_context__.k.signature();
+'use client';
+;
+function useMediaQuery(query) {
+    _s();
+    const [value, setValue] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"](false);
+    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"]({
+        "useMediaQuery.useEffect": ()=>{
+            function onChange(event) {
+                setValue(event.matches);
+            }
+            const result = window.matchMedia(query);
+            result.addEventListener("change", onChange);
+            setValue(result.matches);
+            return ({
+                "useMediaQuery.useEffect": ()=>result.removeEventListener("change", onChange)
+            })["useMediaQuery.useEffect"];
+        }
+    }["useMediaQuery.useEffect"], [
+        query
+    ]);
+    return value;
+}
+_s(useMediaQuery, "6e3AmMTt/hKjM/WfGIX1xtYrgdA=");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
 }),
 "[project]/components/CalendarView.tsx [app-client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
