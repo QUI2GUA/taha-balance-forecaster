@@ -3,7 +3,7 @@ FROM node:18-alpine AS base
 
 # 2. Install dependencies
 FROM base AS deps
-RUN apk add --no-cache libc6-compat openssl
+RUN apk add --no-cache libc6-compat openssl1.1-compat
 
 WORKDIR /app
 
@@ -18,9 +18,6 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN ls -la prisma/ || echo "ERROR: prisma directory not found"
-RUN npx prisma generate || echo "ERROR: prisma generate failed"
-RUN npm run build 2>&1 | tee build.log || (cat build.log && exit 1)
 
 # Set a dummy DATABASE_URL for build time
 ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder?schema=public"
@@ -29,11 +26,14 @@ ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholde
 RUN npx prisma generate
 
 # Now run the build
-RUN npm run build -- --debug
+RUN npm run build
 
 # 4. Runner Stage (Production)
 FROM base AS runner
 WORKDIR /app
+
+# Install OpenSSL 1.1 for Prisma Client
+RUN apk add --no-cache openssl1.1-compat
 
 ENV NODE_ENV production
 
@@ -61,4 +61,4 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
+CMD ["node", "server.js"]
