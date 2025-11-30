@@ -39,3 +39,4 @@ Can't reach database server at `db:5432`
 
 Please make sure your database server is running at `db:5432`.
 [00:16:26.613] Server  LOG      ✓ Compiled in 188ms
+[00:39:25.507] Server  LOG      ✓ Compiled in 129ms
