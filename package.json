@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "dotenv -e .env -- next dev",
-    "build": "dotenv -e .env -- next build",
-    "start": "dotenv -e .env -- next start",
-    "lint": "dotenv -e .env -- next lint",
-    "prisma:migrate": "dotenv -e .env -- npx prisma migrate dev",
-    "prisma:studio": "dotenv -e .env -- npx prisma studio"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:studio": "npx prisma studio"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
