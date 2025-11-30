@@ -26,3 +26,5 @@ Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$ap
 Can't reach database server at `db:5432`
 
 Please make sure your database server is running at `db:5432`.
+[01:19:32.028] Server  LOG      ✓ Compiled in 511ms
+[01:21:05.023] Server  LOG      ✓ Compiled in 266ms
