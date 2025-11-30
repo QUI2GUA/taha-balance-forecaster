@@ -4,9 +4,7 @@ export const dynamic = 'force-dynamic'
 import { ForecastLedger } from '@/components/ForecastLedger';
 import { AddTransactionModal } from '@/components/AddTransactionModal';
 import { FinancialCharts } from '@/components/FinancialCharts';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/db'; // CORRECT: Import the shared client
 
 export default async function DashboardPage() {
   // 1. Fetch the main account

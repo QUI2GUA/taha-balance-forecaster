@@ -2,10 +2,8 @@
 'use server'
 
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/db'; // CORRECT: Import the shared client
 import { revalidatePath } from 'next/cache';
-
-const prisma = new PrismaClient();
 
 // Define the validation schema matching our form
 const transactionSchema = z.object({

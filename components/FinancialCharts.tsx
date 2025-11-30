@@ -23,12 +23,16 @@ import {
   ChartLegendContent
 } from "@/components/ui/chart"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { generateForecast } from "@/lib/forecast"
-import { Transaction } from "@prisma/client"
+
+// --- CORRECTED IMPORT --- 
+// We now import the SIMPLE, serializable type, not the Prisma type.
+import { generateForecast, SimpleTransaction } from "@/lib/forecast"
+
 
 interface FinancialChartsProps {
   startingBalance: number;
-  transactions: Transaction[];
+  // This now uses the simple, decoupled type.
+  transactions: SimpleTransaction[];
 }
 
 export function FinancialCharts({ startingBalance, transactions }: FinancialChartsProps) {

@@ -12,14 +12,18 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { MoreHorizontal, Ban } from "lucide-react"; // Icons
 import { cn } from "@/lib/utils";
 import { format } from 'date-fns';
-import { generateForecast } from '@/lib/forecast';
-import { Transaction } from '@prisma/client';
+
+// --- CORRECTED IMPORT --- 
+// We now import the SIMPLE, serializable type, not the Prisma type.
+import { generateForecast, SimpleTransaction } from '@/lib/forecast';
+
 import { skipTransaction } from '@/app/actions'; // Import the action
-import { toast } from "sonner"; // Optional: for toast notifications if you have them
+import { toast } from "sonner";
 
 interface ForecastLedgerProps {
   startingBalance: number;
-  transactions: Transaction[];
+  // This now uses the simple, decoupled type.
+  transactions: SimpleTransaction[];
 }
 
 export const ForecastLedger = ({ startingBalance, transactions }: ForecastLedgerProps) => {
@@ -29,14 +33,11 @@ export const ForecastLedger = ({ startingBalance, transactions }: ForecastLedger
   const forecastData = generateForecast(startingBalance, transactions, 365);
 
   const handleSkip = (transactionId: string, date: Date) => {
-    // Format strictly to YYYY-MM-DD for the backend
     const dateString = format(date, 'yyyy-MM-dd');
     
-    // Use transition for better UX (prevents UI freeze)
     startTransition(async () => {
       try {
         await skipTransaction(transactionId, dateString);
-        // Note: The toast is optional, remove if you haven't installed a toast library
         console.log("Skipped occurrence on " + dateString);
       } catch (e) {
         console.error("Failed to skip", e);
@@ -63,7 +64,6 @@ export const ForecastLedger = ({ startingBalance, transactions }: ForecastLedger
       </CardHeader>
       
       <CardContent className="p-0 flex-1 overflow-auto relative">
-        {/* Loading Overlay when revalidating */}
         {isPending && (
             <div className="absolute inset-0 bg-background/50 z-50 flex items-center justify-center">
                 <span className="text-sm text-muted-foreground animate-pulse">Updating forecast...</span>
