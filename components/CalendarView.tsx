@@ -15,7 +15,8 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TransactionCard } from './TransactionCard';
-import { useMediaQuery } from '@/hooks/use-media-query'; // A custom hook for responsiveness
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { AddTransactionModal } from './AddTransactionModal'; // Import the modal
 
 interface CalendarViewProps {
   startingBalance: number;
@@ -142,9 +143,12 @@ export function CalendarView({ startingBalance, transactions }: CalendarViewProp
                   <TransactionCard key={itemIndex} item={item} />
                 ))}
               </div>
-              <Button variant="ghost" size="icon" className="absolute bottom-1 right-1 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Plus className="h-4 w-4" />
-              </Button>
+              {/* Wrap the button in the modal, passing the day as the defaultDate */}
+              <AddTransactionModal defaultDate={day}>
+                <Button variant="ghost" size="icon" className="absolute bottom-1 right-1 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </AddTransactionModal>
             </div>
           )
         })}

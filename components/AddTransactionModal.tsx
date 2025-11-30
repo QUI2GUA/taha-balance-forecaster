@@ -1,12 +1,12 @@
 // components/AddTransactionModal.tsx
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CalendarIcon, Plus } from "lucide-react";
-import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { format, startOfDay } from "date-fns";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -41,10 +41,11 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { createTransaction } from '@/app/actions';
 
+// Schema without past date restriction
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters."),
   amount: z.coerce.number().min(0.01, "Please enter a valid amount."),
-  type: z.enum(["INCOME", "EXPENSE"]),
+  type: z.enum(["INCOME", "EXPENSE"], { required_error: "Please select a transaction type." }),
   startDate: z.date({ required_error: "A date is required." }),
   recurrence: z.enum([
     "ONE_TIME", "WEEKLY", "BI_WEEKLY", "MONTHLY", 
@@ -52,7 +53,13 @@ const formSchema = z.object({
   ]),
 });
 
-export function AddTransactionModal() {
+// Props to accept a default date and control open state via children
+interface AddTransactionModalProps {
+  defaultDate?: Date;
+  children: React.ReactNode;
+}
+
+export function AddTransactionModal({ defaultDate, children }: AddTransactionModalProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,9 +69,22 @@ export function AddTransactionModal() {
       amount: 0,
       type: "EXPENSE",
       recurrence: "MONTHLY",
-      startDate: new Date(),
+      startDate: defaultDate || new Date(),
     },
   });
+
+  // Reset form values when the dialog opens
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        title: "",
+        amount: 0,
+        type: "EXPENSE",
+        recurrence: "MONTHLY",
+        startDate: defaultDate || new Date(),
+      });
+    }
+  }, [open, defaultDate, form]);
 
   const { isSubmitting } = form.formState;
 
@@ -74,7 +94,6 @@ export function AddTransactionModal() {
     if (result.success) {
       toast.success("Transaction added successfully!");
       setOpen(false);
-      form.reset();
     } else {
       toast.error(result.error || "Something went wrong.");
     }
@@ -82,17 +101,12 @@ export function AddTransactionModal() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Transaction
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Add a New Transaction</DialogTitle>
           <DialogDescription>
-            Enter the details of your income or expense. It can be a one-time event or something that recurs.
+            Enter the details of your income or expense.
           </DialogDescription>
         </DialogHeader>
         
@@ -112,12 +126,8 @@ export function AddTransactionModal() {
                         onValueChange={field.onChange}
                         className="grid grid-cols-2"
                     >
-                      <ToggleGroupItem value="INCOME" aria-label="Set as income" className="data-[state=on]:bg-emerald-100 dark:data-[state=on]:bg-emerald-900 data-[state=on]:text-emerald-900 dark:data-[state=on]:text-emerald-100 border-emerald-200 dark:border-emerald-800">
-                        Income
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="EXPENSE" aria-label="Set as expense" className="data-[state=on]:bg-rose-100 dark:data-[state=on]:bg-rose-900 data-[state=on]:text-rose-900 dark:data-[state=on]:text-rose-100 border-rose-200 dark:border-rose-800">
-                        Expense
-                      </ToggleGroupItem>
+                      <ToggleGroupItem value="INCOME" aria-label="Set as income">Income</ToggleGroupItem>
+                      <ToggleGroupItem value="EXPENSE" aria-label="Set as expense">Expense</TogglseGroupItem>
                     </ToggleGroup>
                   </FormControl>
                 </FormItem>
@@ -160,23 +170,23 @@ export function AddTransactionModal() {
                   name="recurrence"
                   render={({ field }) => (
                       <FormItem>
-                      <FormLabel>Recurrence</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                          <SelectTrigger>
-                              <SelectValue placeholder="Select a frequency" />
-                          </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                              <SelectItem value="ONE_TIME">One Time</SelectItem>
-                              <SelectItem value="WEEKLY">Weekly</SelectItem>
-                              <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
-                              <SelectItem value="MONTHLY">Monthly</SelectItem>
-                              <SelectItem value="QUARTERLY">Quarterly</SelectItem>
-                              <SelectItem value="ANNUALLY">Annually</SelectItem>
-                          </SelectContent>
-                      </Select>
-                      <FormMessage />
+                        <FormLabel>Recurrence</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                  <SelectValue placeholder="Select a frequency" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="ONE_TIME">One Time</SelectItem>
+                                <SelectItem value="WEEKLY">Weekly</SelectItem>
+                                <SelectItem value="BI_WEEKLY">Bi-Weekly</SelectItem>
+                                <SelectItem value="MONTHLY">Monthly</SelectItem>
+                                <SelectItem value="QUARTERLY">Quarterly</SelectItem>
+                                <SelectItem value="ANNUALLY">Annually</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
                       </FormItem>
                   )}
                 />
@@ -187,36 +197,32 @@ export function AddTransactionModal() {
               name="startDate"
               render={({ field }) => (
                   <FormItem className="flex flex-col">
-                  <FormLabel>Start Date</FormLabel>
-                  <Popover>
-                      <PopoverTrigger asChild>
-                      <FormControl>
-                          <Button
-                          variant={"outline"}
-                          className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                          )}
-                          >
-                          {field.value ? (
-                              format(field.value, "PPP")
-                          ) : (
-                              <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                      </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                      />
-                      </PopoverContent>
-                  </Popover>
-                  <FormMessage />
+                    <FormLabel>Start Date</FormLabel>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-full pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                )}
+                              >
+                              {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              initialFocus
+                          />
+                        </PopoverContent>
+                    </Popover>
+                    <FormMessage />
                   </FormItem>
               )}
             />
