@@ -41,11 +41,17 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
+# --- THE DEFINITIVE FIX ---
+# Manually copy the Prisma CLI and all its related packages from the builder stage's node_modules.
+# This augments the stripped-down node_modules from the standalone output.
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+
 USER nextjs
 
 EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-# Final command
-CMD ["sh", "-c", "npx --no-install prisma migrate deploy && node server.js"]
+# Final command, executing prisma CLI's main script directly with node
+CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && node server.js"]
