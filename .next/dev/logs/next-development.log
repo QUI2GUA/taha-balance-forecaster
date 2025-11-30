@@ -1,1 +1,28 @@
-[00:00:01.705] Server  LOG      ✓ Ready in 1437ms
+[00:00:00.939] Server  LOG      ✓ Ready in 625ms
+[00:00:04.898] Server  LOG      ○ Compiling / ...
+[00:00:07.568] Server  ERROR   file:///home/user/taha-balance-forecaster/node_modules/@prisma/client/runtime/library.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: TypeError [ERR_INVALID_ARG_TYPE]: The "payload" argument must be of type object. Received null
+[00:00:07.572] Server  ERROR    ⨯ PrismaClientInitializationError: 
+Invalid `{imported module ./lib/db.ts}["default"].account.findFirst()` invocation in
+/home/user/taha-balance-forecaster/.next/dev/server/chunks/ssr/[root-of-the-server]__d742ce18._.js:144:152
+
+  141 async function DashboardPage() {
+  142     // 1. Fetch the main account
+  143     // In a real app with Auth, you would filter by userId
+→ 144     const account = await {imported module ./lib/db.ts}["default"].account.findFirst(
+Can't reach database server at `db:5432`
+
+Please make sure your database server is running at `db:5432`.
+[00:00:12.195] Server  WARN     ⚠ Cross origin request detected from 9000-firebase-balance-forecaster-1764487367564.cluster-zumahodzirciuujpqvsniawo3o.cloudworkstations.dev to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+[00:00:12.462] Browser ERROR   {"digest":"498143676","environmentName":"Server","name":"PrismaClientInitializationError"}
+[00:00:12.462] Browser ERROR   uncaughtError: PrismaClientInitializationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].account.findFirst()` invocation in
+/home/user/taha-balance-forecaster/.next/dev/server/chunks/ssr/[root-of-the-server]__d742ce18._.js:144:152
+
+  141 async function DashboardPage() {
+  142     // 1. Fetch the main account
+  143     // In a real app with Auth, you would filter by userId
+→ 144     const account = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].account.findFirst(
+Can't reach database server at `db:5432`
+
+Please make sure your database server is running at `db:5432`.
