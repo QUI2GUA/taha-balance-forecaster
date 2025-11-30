@@ -1,0 +1,35 @@
+{
+  "node": {
+    "40f3cccc1b2faf0d9de2372b786d028a5220395d6b": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createTransaction",
+          "filename": "app/actions.ts"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      },
+      "exportedName": "createTransaction",
+      "filename": "app/actions.ts"
+    },
+    "602de8126cb1129ff1616b4fc37f05d01cd034044f": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "skipTransaction",
+          "filename": "app/actions.ts"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      },
+      "exportedName": "skipTransaction",
+      "filename": "app/actions.ts"
+    }
+  },
+  "edge": {}
+}
