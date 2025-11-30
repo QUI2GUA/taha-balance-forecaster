@@ -8,6 +8,7 @@ import { CalendarView } from '@/components/CalendarView';
 import FinancialCharts from '@/components/FinancialCharts';
 import ForecastLedger from '@/components/ForecastLedger';
 import { generateForecast, SimpleRecurrence, SimpleTransaction } from '@/lib/forecast';
+import NoSsr from './NoSsr';
 
 // Define a type for the serialized transaction data from the server
 export type SerializedTransaction = {
@@ -82,9 +83,11 @@ export default function Dashboard({ startingBalance, transactions }: DashboardPr
       </header>
       <main className="flex-1 p-4 md:p-6 grid gap-6 grid-cols-1 lg:grid-cols-3">
         <div className="lg:col-span-2">
+          <NoSsr>
             <CalendarView 
                 forecast={forecast} 
             />
+          </NoSsr>
         </div>
         <div className="lg:col-span-1 flex flex-col gap-6">
           <FinancialCharts 
