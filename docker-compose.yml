@@ -3,10 +3,10 @@ version: '3.8'
 services:
   app:
     container_name: forecast-ledger-app
-    # Use "context: ." to build from the current directory (Repository root)
     build:
       context: .
       dockerfile: Dockerfile
+      target: runner # Explicitly use the final runner stage for the app
       args:
         - DATABASE_URL=postgresql://pguser:pgpassword@db:5432/forecastdb?schema=public
     restart: always
@@ -15,6 +15,24 @@ services:
     environment:
       - DATABASE_URL=postgresql://pguser:pgpassword@db:5432/forecastdb?schema=public
       - HOME=/tmp
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - forecast-net
+
+  # ADD THE MIGRATOR SERVICE
+  migrator:
+    container_name: forecast-ledger-migrator
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder # Explicitly use the builder stage
+    environment:
+      - DATABASE_URL=postgresql://pguser:pgpassword@db:5432/forecastdb?schema=public
+    # Mount the prisma directory as a volume to get the migrations on the host
+    volumes:
+      - ./prisma:/app/prisma
     depends_on:
       db:
         condition: service_healthy
