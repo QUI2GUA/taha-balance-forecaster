@@ -27,19 +27,6 @@
       --tw-ring-offset-color: #fff;
       --tw-ring-offset-shadow: 0 0 #0000;
       --tw-outline-style: solid;
-      --tw-blur: initial;
-      --tw-brightness: initial;
-      --tw-contrast: initial;
-      --tw-grayscale: initial;
-      --tw-hue-rotate: initial;
-      --tw-invert: initial;
-      --tw-opacity: initial;
-      --tw-saturate: initial;
-      --tw-sepia: initial;
-      --tw-drop-shadow: initial;
-      --tw-drop-shadow-color: initial;
-      --tw-drop-shadow-alpha: 100%;
-      --tw-drop-shadow-size: initial;
       --tw-duration: initial;
     }
   }
@@ -105,10 +92,6 @@
   width: 100%;
 }
 
-.mx-auto {
-  margin-inline: auto;
-}
-
 .ml-auto {
   margin-left: auto;
 }
@@ -150,10 +133,6 @@
   height: --cell-size;
 }
 
-.h-\[300px\] {
-  height: 300px;
-}
-
 .h-\[350px\] {
   height: 350px;
 }
@@ -182,20 +161,12 @@
   max-height: --radix-select-content-available-height;
 }
 
-.max-h-\[300px\] {
-  max-height: 300px;
-}
-
 .max-h-\[var\(--radix-dropdown-menu-content-available-height\)\] {
   max-height: var(--radix-dropdown-menu-content-available-height);
 }
 
 .min-h-\[120px\] {
   min-height: 120px;
-}
-
-.min-h-\[150px\] {
-  min-height: 150px;
 }
 
 .min-h-screen {
@@ -212,10 +183,6 @@
 
 .w-\[120px\] {
   width: 120px;
-}
-
-.w-\[300px\] {
-  width: 300px;
 }
 
 .w-auto {
@@ -292,10 +259,6 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.grid-cols-7 {
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-}
-
 .flex-col {
   flex-direction: column;
 }
@@ -330,14 +293,6 @@
 
 .justify-center {
   justify-content: center;
-}
-
-.justify-end {
-  justify-content: flex-end;
-}
-
-.justify-start {
-  justify-content: flex-start;
 }
 
 .truncate {
@@ -492,10 +447,6 @@
 .outline {
   outline-style: var(--tw-outline-style);
   outline-width: 1px;
-}
-
-.filter {
-  filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
 }
 
 .transition-all {
@@ -702,14 +653,6 @@
 
 :is(.rtl\:\*\*\:\[\.rdp-button\\_previous\>svg\]\:rotate-180:where(:is(:lang(ae), :lang(ar), :lang(arc), :lang(bcc), :lang(bqi), :lang(ckb), :lang(dv), :lang(fa), :lang(glk), :lang(he), :lang(ku), :lang(mzn), :lang(nqo), :lang(pnb), :lang(ps), :lang(sd), :lang(ug), :lang(ur), :lang(yi)), [dir="rtl"], [dir="rtl"] *) *):is(.rdp-button_previous > svg) {
   rotate: 180deg;
-}
-
-.\[\&\>\*\]\:basis-1\/4 > * {
-  flex-basis: 25%;
-}
-
-.\[\&\>\*\]\:justify-center > * {
-  justify-content: center;
 }
 
 .\[\&\>span\]\:line-clamp-1 > span {
@@ -937,72 +880,6 @@
   syntax: "*";
   inherits: false;
   initial-value: solid;
-}
-
-@property --tw-blur {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-brightness {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-contrast {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-grayscale {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-hue-rotate {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-invert {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-opacity {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-saturate {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-sepia {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-drop-shadow {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-drop-shadow-color {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-drop-shadow-alpha {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 100%;
-}
-
-@property --tw-drop-shadow-size {
-  syntax: "*";
-  inherits: false
 }
 
 @property --tw-duration {

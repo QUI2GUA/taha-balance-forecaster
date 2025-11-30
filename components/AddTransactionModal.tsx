@@ -127,7 +127,7 @@ export function AddTransactionModal({ defaultDate, children }: AddTransactionMod
                         className="grid grid-cols-2"
                     >
                       <ToggleGroupItem value="INCOME" aria-label="Set as income">Income</ToggleGroupItem>
-                      <ToggleGroupItem value="EXPENSE" aria-label="Set as expense">Expense</TogglseGroupItem>
+                      <ToggleGroupItem value="EXPENSE" aria-label="Set as expense">Expense</ToggleGroupItem>
                     </ToggleGroup>
                   </FormControl>
                 </FormItem>
