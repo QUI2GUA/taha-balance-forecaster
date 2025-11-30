@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: builder # Use the builder stage, which has source code and dependencies
+      target: runner # Use the final runner stage for the application
     restart: always
     ports:
       - "3000:3000"
@@ -16,27 +16,26 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrator:
+        condition: service_completed_successfully # Wait for migrations to finish
     networks:
       - forecast-net
-    # This command runs on container startup, after the db is healthy
-    command: >
-      sh -c "
-        npx prisma generate &&
-        npm run build &&
-        npx prisma migrate deploy &&
-        node .next/standalone/server.js
-      "
+    # The CMD from the Dockerfile's runner stage will start the app
 
   migrator:
     container_name: forecast-ledger-migrator
     build:
       context: .
       dockerfile: Dockerfile
-      target: builder
+      target: builder # Use the builder stage which has all dependencies
     environment:
       - DATABASE_URL=postgresql://pguser:pgpassword@db:5432/forecastdb?schema=public
-    volumes:
-      - ./prisma:/app/prisma
+    # Command to generate prisma client and run migrations
+    command: >
+      sh -c "
+        npx prisma generate &&
+        npx prisma migrate deploy
+      "
     depends_on:
       db:
         condition: service_healthy
