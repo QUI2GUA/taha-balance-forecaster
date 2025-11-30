@@ -4,7 +4,7 @@
     pkgs.nodejs_20
     pkgs.docker
     pkgs.docker-compose
-    pkgs.openssl_1_1
+    pkgs.openssl
   ];
   idx.extensions = [
     
