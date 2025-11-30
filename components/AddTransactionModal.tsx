@@ -43,7 +43,7 @@ import { createTransaction } from '@/app/actions';
 
 // Schema without past date restriction
 const formSchema = z.object({
-  title: z.string().min(2, "Title must be at least 2 characters."),
+  description: z.string().min(2, "Description must be at least 2 characters."),
   amount: z.coerce.number().min(0.01, "Please enter a valid amount."),
   type: z.enum(["INCOME", "EXPENSE"], { required_error: "Please select a transaction type." }),
   startDate: z.date({ required_error: "A date is required." }),
@@ -65,7 +65,7 @@ export function AddTransactionModal({ defaultDate, children }: AddTransactionMod
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
+      description: "",
       amount: 0,
       type: "EXPENSE",
       recurrence: "MONTHLY",
@@ -77,7 +77,7 @@ export function AddTransactionModal({ defaultDate, children }: AddTransactionMod
   useEffect(() => {
     if (open) {
       form.reset({
-        title: "",
+        description: "",
         amount: 0,
         type: "EXPENSE",
         recurrence: "MONTHLY",
@@ -136,7 +136,7 @@ export function AddTransactionModal({ defaultDate, children }: AddTransactionMod
 
             <FormField
               control={form.control}
-              name="title"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>

@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 
 // Define the validation schema matching our form
 const transactionSchema = z.object({
-  title: z.string().min(2, "Title must be at least 2 characters"),
+  description: z.string().min(2, "Description must be at least 2 characters"),
   amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
   type: z.enum(["INCOME", "EXPENSE"]),
   startDate: z.date(),
@@ -35,7 +35,7 @@ export async function createTransaction(formData: z.infer<typeof transactionSche
   await prisma.transaction.create({
     data: {
       accountId: account.id,
-      title: formData.title,
+      description: formData.description,
       amount: finalAmount,
       startDate: formData.startDate,
       recurrence: formData.recurrence,
