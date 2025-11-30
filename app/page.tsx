@@ -1,54 +1,39 @@
 // app/page.tsx
 export const dynamic = 'force-dynamic'
 
-import { ForecastLedger } from '@/components/ForecastLedger';
 import { AddTransactionModal } from '@/components/AddTransactionModal';
-import { FinancialCharts } from '@/components/FinancialCharts';
-import prisma from '@/lib/db'; // CORRECT: Import the shared client
+import { CalendarView } from '@/components/CalendarView'; // The new calendar component
+import prisma from '@/lib/db';
 
 export default async function DashboardPage() {
   // 1. Fetch the main account
-  // In a real app with Auth, you would filter by userId
   const account = await prisma.account.findFirst() || await prisma.account.create({
     data: { name: "Main Checking", currentBalance: 0 }
   });
 
-  // 2. Fetch all recurring rules
+  // 2. Fetch all recurring transactions (the rules)
   const transactions = await prisma.transaction.findMany({
     where: { accountId: account.id },
     orderBy: { startDate: 'asc' }
   });
 
   return (
-    <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
-        
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-              Cash Flow
-            </h1>
-            <p className="text-muted-foreground">
-              Projecting your liquidity for the next 365 days.
-            </p>
-          </div>
-          
-          {/* Replaced placeholder button with our new Modal */}
-          <AddTransactionModal />
+    // Use a simpler, full-width layout
+    <div className="min-h-screen w-full bg-background flex flex-col">
+      <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background/95 px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 py-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Cash Flow Calendar
+        </h1>
+        <div className="ml-auto">
+            <AddTransactionModal />
         </div>
-
-        {/* The New Charts Section */}
-        <FinancialCharts 
+      </header>
+      <main className="flex-1 p-4 md:p-6">
+        <CalendarView 
             startingBalance={Number(account.currentBalance)} 
             transactions={transactions} 
         />
-
-        <ForecastLedger 
-            startingBalance={Number(account.currentBalance)} 
-            transactions={transactions} 
-        />
-        
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
