@@ -6,8 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: runner
-      no_cache: true # Force a no-cache build
+      target: runner # Explicitly use the final runner stage for the app
       args:
         - DATABASE_URL=postgresql://pguser:pgpassword@db:5432/forecastdb?schema=public
     restart: always
@@ -22,15 +21,16 @@ services:
     networks:
       - forecast-net
 
+  # ADD THE MIGRATOR SERVICE
   migrator:
     container_name: forecast-ledger-migrator
     build:
       context: .
       dockerfile: Dockerfile
-      target: builder
-      no_cache: true # Force a no-cache build for the migrator too
+      target: builder # Explicitly use the builder stage
     environment:
       - DATABASE_URL=postgresql://pguser:pgpassword@db:5432/forecastdb?schema=public
+    # Mount the prisma directory as a volume to get the migrations on the host
     volumes:
       - ./prisma:/app/prisma
     depends_on:
