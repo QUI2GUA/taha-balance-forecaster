@@ -17,6 +17,9 @@ RUN npm install
 # Copy the rest of the source code
 COPY . .
 
+# Generate the Prisma client first
+RUN npx prisma generate
+
 # Build the Next.js application
 # This will generate the .next/standalone directory because of `output: 'standalone'` in next.config.mjs
 RUN npm run build
